@@ -75,7 +75,7 @@ export default function PostDetail({ post }: { post: Post }) {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   // Pre-render 5 popular posts at build time
-  const res = await fetch("https://dev.to/api/articles?top=30&per_page=5");
+  const res = await fetch("https://dev.to/api/articles?top=30&per_page=9");
   const posts = await res.json();
 
   const paths = posts.map((post: Post) => ({
@@ -84,7 +84,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    fallback: true, // Enable fallback for new posts
+    fallback: false, // Enable fallback for new posts
   };
 };
 
@@ -102,7 +102,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       props: {
         post,
       },
-      revalidate: 60 * 10, // Re-generate every hour (ISR)
+      //   revalidate: 60 * 10, // Re-generate every hour (ISR)
     };
   } catch (error) {
     console.error("Error fetching post:", error);
