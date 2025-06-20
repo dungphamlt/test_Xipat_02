@@ -49,7 +49,9 @@ export default function PostDetail({ post }: { post: Post }) {
             <Image
               src={post.user.profile_image}
               alt={post.user.name}
-              className="w-12 h-12 rounded-full mr-4"
+              width={48}
+              height={48}
+              className="rounded-full mr-4"
             />
             <div>
               <p className="font-medium">{post.user.name}</p>
