@@ -75,7 +75,7 @@ export default function PostDetail({ post }: { post: Post }) {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   // Pre-render 5 popular posts at build time
-  const res = await fetch("https://dev.to/api/articles?top=50");
+  const res = await fetch("https://dev.to/api/articles");
   const posts = await res.json();
 
   const paths = posts.map((post: Post) => ({
