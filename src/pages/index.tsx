@@ -1,115 +1,103 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+import { PostCard, Post } from "@/components/PostCard";
+import Pagination from "@/components/Pagination";
+import { GetStaticProps } from "next";
+import { useState } from "react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+type HomeProps = {
+  initialPosts: Post[];
+  totalPages: number;
+};
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export default function Home({ initialPosts, totalPages }: HomeProps) {
+  const [posts, setPosts] = useState<Post[]>(initialPosts);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-export default function Home() {
+  const fetchPosts = async (page: number) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(
+        `https://dev.to/api/articles?top=30&per_page=9&page=${page}`
+      );
+      const newPosts = await res.json();
+      setPosts(newPosts);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="container px-4 sm:px-0 mx-auto py-8">
+      <h1 className="text-3xl font-bold mb-6 primary">Blog Posts</h1>
+
+      <div className="grid grid-cols-12 gap-6 mb-8">
+        {posts.map((post: Post) => (
+          <div
+            key={post.id}
+            className="col-span-12 sm:col-span-6 lg:col-span-4"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <PostCard post={post} />
+          </div>
+        ))}
+      </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={fetchPosts}
+        isLoading={isLoading}
+      />
+
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      )}
     </div>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  try {
+    const res = await fetch("https://dev.to/api/articles");
+    const resPage1 = await fetch(
+      "https://dev.to/api/articles?top=30&per_page=9&page=1"
+    );
+    const allPosts = await res.json();
+    const postPage1 = await resPage1.json();
+    const totalPages = Math.ceil(allPosts.length / 9);
+
+    // Chỉ lấy các thuộc tính cần thiết theo type Post
+    const initialPosts = postPage1.map((post: Post) => ({
+      id: post.id,
+      title: post.title,
+      description: post.description,
+      readable_publish_date: post.readable_publish_date,
+      url: post.url,
+      user: {
+        name: post.user.name,
+        profile_image: post.user.profile_image,
+      },
+      cover_image: post.cover_image,
+    }));
+
+    return {
+      props: {
+        initialPosts,
+        totalPages,
+      },
+      revalidate: 60,
+    };
+  } catch (error) {
+    return {
+      props: {
+        initialPosts: [],
+        totalPages: 0,
+      },
+      revalidate: 60,
+    };
+  }
+};
