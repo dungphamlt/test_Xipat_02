@@ -92,6 +92,7 @@ export const getStaticProps: GetStaticProps = async () => {
       revalidate: 60,
     };
   } catch (error) {
+    console.error(error);
     return {
       props: {
         initialPosts: [],

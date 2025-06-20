@@ -2,6 +2,8 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { Post } from "@/components/PostCard";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function PostDetail({ post }: { post: Post }) {
   const router = useRouter();
@@ -34,17 +36,17 @@ export default function PostDetail({ post }: { post: Post }) {
         )}
         <div className="container px-4 sm:px-0 mx-auto py-8">
           <div className="flex text-2xl gap-2 mb-8 items-center">
-            <a
+            <Link
               href="/"
               className=" font-bold hover:text-blue-500 hover:underline"
             >
               Home
-            </a>
+            </Link>
             <span className="font-bold">{">"}</span>
             <span className="text-blue-500 font-semibold">{post.title}</span>
           </div>
           <div className="flex items-center mb-6">
-            <img
+            <Image
               src={post.user.profile_image}
               alt={post.user.name}
               className="w-12 h-12 rounded-full mr-4"
@@ -98,9 +100,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
       props: {
         post,
       },
-      revalidate: 60 * 60, // Re-generate every hour (ISR)
+      revalidate: 60 * 10, // Re-generate every hour (ISR)
     };
   } catch (error) {
+    console.error("Error fetching post:", error);
     return {
       notFound: true,
     };
